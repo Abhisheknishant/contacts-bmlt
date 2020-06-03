@@ -1,6 +1,8 @@
 language: php
 os: linux
-
+arch:
+    - amd64
+    - arm64
 php:
 - '7.1'
 env:
@@ -17,7 +19,18 @@ jobs:
     script:
     - find . -name "*.php" ! -path '*/vendor/*' -print0 | xargs -0 -n1 -P8 php -l
     - vendor/squizlabs/php_codesniffer/bin/phpcs --warning-severity=6 --standard=PSR2 --ignore=vendor --extensions=php --report=summary ./
+  - stage: lint
+    arch: arm64
+    install:
+    - composer install
+    script:
+    - find . -name "*.php" ! -path '*/vendor/*' -print0 | xargs -0 -n1 -P8 php -l
+    - vendor/squizlabs/php_codesniffer/bin/phpcs --warning-severity=6 --standard=PSR2 --ignore=vendor --extensions=php --report=summary ./
+
   - stage: zip file
+    arch:
+        - amd64
+        - arm64
     env:
     - BUILD_DIR=build
     - DIST_DIR_S3=dist/s3
